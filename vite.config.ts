@@ -32,7 +32,7 @@ export default defineConfig({
             src: "android-chrome-512x512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable"
+            purpose: "any maskable",
           },
         ],
         start_url: ".",
@@ -47,4 +47,7 @@ export default defineConfig({
     port: 5000,
   },
   base: "/2playertetris/",
+  optimizeDeps: {
+    exclude: ["firebase", "firebase/app", "firebase/firestore"],
+  },
 });

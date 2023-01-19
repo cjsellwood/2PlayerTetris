@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Square } from "./useTetris";
 import "./Opponent.css";
+import { db } from "./firebase";
 
-const Opponent = () => {
+const Opponent = ({ lockedBoard }: { lockedBoard: Square[][] }) => {
   // const [board, setBoard] = useState<Square[][]>(
   //   new Array(20).fill(new Array(10).fill({}))
   // );
@@ -260,10 +261,18 @@ const Opponent = () => {
   const [lines, setLines] = useState(0);
   const [highScore, setHighScore] = useState(0);
 
+  useEffect(() => {
+    console.log("Send to opponent");
+  }, [lockedBoard]);
+
+  useEffect(() => {
+    console.log(db);
+  }, []);
+
   return (
     <div className="opponent">
       <div className="opponent-board-container">
-          <h1>Opponent</h1>
+        <h1>Opponent</h1>
         <div className="opponent-board">
           {board.map((row, i) => {
             return (

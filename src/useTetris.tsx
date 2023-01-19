@@ -28,6 +28,7 @@ interface TetrisHook {
   lines: number;
   score: number;
   highScores: number[];
+  lockedBoard: Square[][];
 }
 
 export const duplicateBoard = (board: Square[][]) => {
@@ -45,6 +46,7 @@ const useTetris = (): TetrisHook => {
   const [lines, setLines] = useState(0);
   const [highScores, setHighScores] = useState([0, 0, 0, 0, 0]);
   const [reset, setReset] = useState(Date.now());
+  const [lockedBoard, setLockedBoard] = useState<Square[][]>(board);
 
   const gameLoop = () => {
     if (!isActive()) {
@@ -52,6 +54,7 @@ const useTetris = (): TetrisHook => {
     } else if (blockedDown(board)) {
       const newBoard = lockBlock(board, scoreLines);
       setBoard(newBoard);
+      setLockedBoard(newBoard);
     } else {
       const newBoard = moveDown(board);
       addPreview(newBoard);
@@ -119,6 +122,7 @@ const useTetris = (): TetrisHook => {
     setScore(0);
     setLines(0);
     setBoard(new Array(20).fill(new Array(10).fill({})));
+    setLockedBoard(new Array(20).fill(new Array(10).fill({})))
   };
 
   const scoreLines = (clearedLines: number) => {
@@ -197,6 +201,7 @@ const useTetris = (): TetrisHook => {
       setReset(Date.now());
       setBoard(newBoard);
       setKeyDown(false);
+      setLockedBoard(newBoard);
       return;
     }
     if (!isActive()) {
@@ -313,6 +318,7 @@ const useTetris = (): TetrisHook => {
     lines,
     score,
     highScores,
+    lockedBoard,
   };
 };
 

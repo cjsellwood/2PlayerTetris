@@ -1,17 +1,25 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import "./App.css";
 import Opponent from "./Opponent";
 import useTetris from "./useTetris";
 
 function App() {
-  const { start, board, gameOver, level, lines, score, highScores } =
-    useTetris();
+  const {
+    start,
+    board,
+    gameOver,
+    level,
+    lines,
+    score,
+    highScores,
+    lockedBoard,
+  } = useTetris();
 
   return (
     <div className="App">
       <div className="game">
         <div className="opponent-container">
-          <Opponent />
+          <Opponent lockedBoard={lockedBoard}/>
         </div>
         <div className="board-container">
           <div className="board">
