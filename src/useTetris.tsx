@@ -22,14 +22,6 @@ export interface Square {
 
 interface TetrisHook {
   start: () => void;
-  setKeyLeft: (isPressed: boolean) => void;
-  setKeyRight: (isPressed: boolean) => void;
-  setKeyUp: (isPressed: boolean) => void;
-  setKeyDown: (isPressed: boolean) => void;
-  setLeftClicks: (clicks: number) => void;
-  setRightClicks: (clicks: number) => void;
-  setUpClicks: (clicks: number) => void;
-  setDownClicks: (clicks: number) => void;
   board: Square[][];
   gameOver: boolean;
   level: number;
@@ -315,14 +307,6 @@ const useTetris = (): TetrisHook => {
 
   return {
     start,
-    setKeyLeft,
-    setKeyRight,
-    setKeyUp,
-    setKeyDown,
-    setLeftClicks,
-    setRightClicks,
-    setUpClicks,
-    setDownClicks,
     board,
     gameOver,
     level,

@@ -1,0 +1,75 @@
+.opponent {
+  display: grid;
+  grid-template-rows: 0.7fr 0.3fr;
+  width: 100%;
+  height: 100%;
+}
+
+.opponent-board-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding-top: min(2vw, 2vh);
+  color: rgb(199, 199, 199);
+  font-size: min(3vw, 3vh);
+  font-family: "Righteous", Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+}
+
+.opponent-board-container > h1 {
+  padding-bottom: min(1vw, 1vh);
+}
+
+.opponent-board {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background-color: rgb(28, 28, 28);
+  border: 2px solid rgb(45, 45, 45);
+}
+
+.opponent-row {
+  display: flex;
+  width: 100%;
+  gap: 1px;
+}
+
+.opponent .square {
+  width: min(3vw, 3vh);
+  height: min(3vw, 3vh);
+}
+
+.opponent-info {
+  font-size: min(2vw, 2vh);
+  color: rgb(199, 199, 199);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.opponent-info h1 {
+  color: rgb(199, 199, 199);
+  font-size: min(3vw, 3vh);
+  font-family: "Righteous", Arial, Helvetica, sans-serif;
+  text-align: right;
+}
+
+.opponent-info h2 {
+  color: rgb(198, 198, 198);
+  font-size: min(3vw, 3vh);
+  font-family: "Righteous", Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.opponent-score-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: min(2vw, 2vh);
+  padding: 0 min(2vw, 2vh);
+}

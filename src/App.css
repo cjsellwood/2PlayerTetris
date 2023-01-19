@@ -28,7 +28,8 @@ body {
   body::after {
     content: "Please use a wider screen and a keyboard";
     color: rgb(225, 225, 225);
-    width: 100%;
+    width: 80%;
+    padding-left: 10%;
     padding-top: min(6vw, 6vh);
     color: rgb(199, 199, 199);
     font-size: min(6vw, 6vh);
@@ -215,7 +216,6 @@ body {
 }
 
 .opponent-container {
-  background-color: darkslategrey;
   width: 100%;
   height: 100%;
 }
