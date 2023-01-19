@@ -10,29 +10,43 @@ body {
 }
 
 .game {
-  width: min(100vw, 100vh);
-  height: min(100vw, 100vh);
+  width: min(100vw);
+  height: min(100vh);
   display: grid;
-  grid-template-columns: 0 0.55fr 0.45fr;
+  grid-template-columns: 0.3fr 0.4fr 0.3fr;
   justify-content: center;
   gap: min(1vw, 1vh);
+  align-items: center;
+  justify-items: center;
 }
 
-@media (min-aspect-ratio: 15/9) {
-  .game {
-    width: min(140vw, 140vh);
-    grid-template-columns: 0.4fr 0.6fr 0.4fr;
+@media (max-aspect-ratio: 1199/975) {
+  .App {
+    display: none;
+  }
+
+  body::after {
+    content: "Please use a wider screen and a keyboard";
+    color: rgb(225, 225, 225);
+    width: 100%;
+    padding-top: min(6vw, 6vh);
+    color: rgb(199, 199, 199);
+    font-size: min(6vw, 6vh);
+    font-family: "Righteous", Arial, Helvetica, sans-serif;
+    text-align: center;
+    position: absolute;
+    transform: translateY(50%);
   }
 }
 
 .info {
-  padding: min(2vw, 2vh);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: min(5vw, 5vh);
   width: 100%;
+  max-width: 23vw;
 }
 
 .score-grid {
@@ -114,13 +128,6 @@ body {
   width: min(4.5vw, 4.5vh);
   height: min(4.5vw, 4.5vh);
   background-color: rgb(0, 0, 0);
-}
-
-@media (max-aspect-ratio: 10/16) {
-  .square {
-    width: min(5.5vw, 5.5vh);
-    height: min(5.5vw, 5.5vh);
-  }
 }
 
 .I,
@@ -207,60 +214,8 @@ body {
   border-style: outset;
 }
 
-.width-control {
-  font-size: min(6vw, 6vh);
-  color: transparent;
-  white-space: nowrap;
-  font-family: "Righteous", Arial, Helvetica, sans-serif;
-  user-select: none;
-  height: 0;
-  margin-top: max(-5vw, -5vh);
-}
-
-.controls {
-  display: grid;
-  width: 100%;
-  height: min(42vw, 42vh);
-  padding: min(2vw, 2vh);
-  margin-top: min(25vw, 25vh);
-  grid-template-areas:
-    "left up right"
-    "left down right";
-  grid-template-columns: 0.3fr 0.4fr 0.3fr;
-  user-select: none;
-}
-
-.control {
+.opponent-container {
+  background-color: darkslategrey;
   width: 100%;
   height: 100%;
-  border: 2px solid rgb(45, 45, 45);
-  background-color: transparent;
-  color: white;
-  font-size: min(10vw, 10vh);
-}
-
-.up {
-  grid-area: up;
-}
-
-.right {
-  grid-area: right;
-}
-
-.down {
-  grid-area: down;
-}
-
-.left {
-  grid-area: left;
-}
-
-@media (min-aspect-ratio: 10/16) {
-  .controls {
-    display: none;
-  }
-
-  .App {
-    grid-template-rows: 0.8fr 0.2fr;
-  }
 }

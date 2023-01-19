@@ -60,7 +60,7 @@ function App() {
   return (
     <div className="App">
       <div className="game">
-        <div></div>
+        <div className="opponent-container"></div>
         <div className="board-container">
           <div className="board">
             {board.map((row, i) => {
@@ -82,7 +82,6 @@ function App() {
           </div>
         </div>
         <div className="info">
-          <p className="width-control">GAME OVER</p>
           <div className="score-grid">
             <h2>Level</h2>
             <h1>{level}</h1>
@@ -109,36 +108,6 @@ function App() {
           )}
           {gameOver && <button onClick={() => start()}>Start</button>}
         </div>
-      </div>
-      <div className="controls">
-        <button
-          className="control up"
-          onTouchStart={upPress}
-          onTouchEnd={upRelease}
-        >
-          ↑
-        </button>
-        <button
-          className="control left"
-          onTouchStart={leftPress}
-          onTouchEnd={leftRelease}
-        >
-          ←
-        </button>
-        <button
-          className="control down"
-          onTouchStart={downPress}
-          onTouchEnd={downRelease}
-        >
-          ↓
-        </button>
-        <button
-          className="control right"
-          onTouchStart={rightPress}
-          onTouchEnd={rightRelease}
-        >
-          →
-        </button>
       </div>
     </div>
   );

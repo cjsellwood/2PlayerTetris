@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://cjsellwood.github.io/tetris",
+  "homepage": "https://cjsellwood.github.io/2Playertetris",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
