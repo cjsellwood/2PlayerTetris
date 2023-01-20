@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Square } from "./useTetris";
 import "./Opponent.css";
 import { db } from "./firebase";
+import useRTC from "./useRTC";
 
 const Opponent = ({ lockedBoard }: { lockedBoard: Square[][] }) => {
   // const [board, setBoard] = useState<Square[][]>(
@@ -266,13 +267,16 @@ const Opponent = ({ lockedBoard }: { lockedBoard: Square[][] }) => {
   }, [lockedBoard]);
 
   useEffect(() => {
-    console.log(db);
+    
   }, []);
+
+  const { sendData, startRTC } = useRTC();
 
   return (
     <div className="opponent">
       <div className="opponent-board-container">
         <h1>Opponent</h1>
+        <button onClick={startRTC}>StartRTC</button>
         <div className="opponent-board">
           {board.map((row, i) => {
             return (
