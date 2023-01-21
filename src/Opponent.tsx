@@ -23,14 +23,13 @@ const Opponent = ({
     });
   }, [lockedBoard]);
 
-  const { sendData, startRTC, opponent } = useRTC();
+  const { sendData, startRTC, opponent, connectionStatus } = useRTC();
 
-  if (!opponent) {
+  if (connectionStatus !== "connected") {
     return (
       <div className="opponent">
         <div className="opponent-board-container">
-          <button onClick={startRTC}>StartRTC</button>
-          <h1>Loading</h1>
+          <h1>{connectionStatus}</h1>
         </div>
       </div>
     );
