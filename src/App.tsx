@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import "./App.css";
 import Opponent from "./Opponent";
 import useTetris from "./useTetris";
@@ -14,6 +14,7 @@ function App() {
     highScores,
     lockedBoard,
   } = useTetris();
+  const [starting, setStarting] = useState(true);
 
   return (
     <div className="App">
@@ -53,6 +54,16 @@ function App() {
             <h2>Score</h2>
             <h1>{score}</h1>
           </div>
+          {starting && (
+            <button
+              onClick={() => {
+                start();
+                setStarting(false);
+              }}
+            >
+              Start
+            </button>
+          )}
           {gameOver && <h1 className="game-over">GAME OVER</h1>}
           {gameOver && (
             <div>

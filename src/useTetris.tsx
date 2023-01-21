@@ -306,9 +306,9 @@ const useTetris = (): TetrisHook => {
   useInterval(keyListener, 60, reset);
 
   // Start game on initial load
-  useEffect(() => {
-    setTiming(1000);
-  }, []);
+  // useEffect(() => {
+  //   setTiming(1000);
+  // }, []);
 
   return {
     start,
