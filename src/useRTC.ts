@@ -29,7 +29,7 @@ const configuration = {
   iceCandidatePoolSize: 10,
 };
 
-const peerConnection = new RTCPeerConnection(configuration);
+let peerConnection = new RTCPeerConnection(configuration);
 
 const useRTC = () => {
   const [dataChannel, setDataChannel] = useState<RTCDataChannel>();
@@ -40,6 +40,7 @@ const useRTC = () => {
     score: 0,
   });
   const [connectionStatus, setConnectionStatus] = useState("");
+  const [iceCandidates, setIceCandidates] = useState<RTCIceCandidate[]>([]);
 
   const getRooms = async () => {
     const roomDocs = await getDocs(collection(db, "calls"));
@@ -52,7 +53,6 @@ const useRTC = () => {
 
   const startUp = async () => {
     const currentRooms = await getRooms();
-    console.log(currentRooms);
 
     setConnectionStatus("Searching");
     // If no current rooms create a new room
@@ -67,11 +67,10 @@ const useRTC = () => {
       if (didJoin) {
         return;
       }
-
-      console.log(currentRooms);
     }
 
     // Create room if did not connect to any
+    peerConnection = new RTCPeerConnection();
     createRoom();
   };
 
@@ -88,12 +87,11 @@ const useRTC = () => {
     };
 
     // Collect ICE candidates
-    peerConnection.addEventListener("icecandidate", async (e) => {
+    peerConnection.addEventListener("icecandidate", async (e: any) => {
       if (!e.candidate) {
-        console.log("Got final candidate");
         return;
       }
-      // console.log("Got candidate: ", e.candidate);
+      setIceCandidates((i) => [...i, e.candidate]);
       await addDoc(offerCandidates, e.candidate.toJSON());
     });
 
@@ -109,13 +107,11 @@ const useRTC = () => {
     };
 
     await setDoc(callDoc, offer);
-    console.log(`New room created with SDP offer. Room ID: ${callDoc.id}`);
 
     // Listen for remote answer
     onSnapshot(callDoc, async (snapshot) => {
       const data = snapshot.data();
       if (!peerConnection.currentRemoteDescription && data?.answer) {
-        console.log("Got remote description: ", data.answer);
         const answerDescription = new RTCSessionDescription(data!.answer);
         await peerConnection.setRemoteDescription(answerDescription);
         setConnectionStatus("connected");
@@ -127,7 +123,6 @@ const useRTC = () => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
           let data = change.doc.data();
-          // console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
           peerConnection.addIceCandidate(new RTCIceCandidate(data));
         }
       });
@@ -144,23 +139,19 @@ const useRTC = () => {
     // Check if room already has been answered before and delete if has
     if (!(await getDocs(answerCandidates)).empty) {
       await deleteRoom(id);
-      console.log("DELETE");
       return false;
     }
 
     // Collect ICE candidates
-    peerConnection.addEventListener("icecandidate", async (e) => {
+    peerConnection.addEventListener("icecandidate", async (e: any) => {
       if (!e.candidate) {
-        console.log("Got final candidate");
         return;
       }
-      // console.log("Got candidate: ", e.candidate);
+      setIceCandidates((i) => [...i, e.candidate]);
       await addDoc(answerCandidates, e.candidate.toJSON());
     });
 
     const callData = (await getDoc(callDoc)).data();
-    console.log(callData);
-
     if (!callData) {
       return false;
     }
@@ -182,11 +173,9 @@ const useRTC = () => {
 
     // Listen to remote ICE candidates
     onSnapshot(offerCandidates, (snapshot) => {
-      console.log(snapshot.docChanges());
       snapshot.docChanges().forEach(async (change) => {
         if (change.type === "added") {
           let data = change.doc.data();
-          // console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
           await peerConnection.addIceCandidate(new RTCIceCandidate(data));
         }
       });
@@ -194,28 +183,30 @@ const useRTC = () => {
 
     setConnectionStatus("Searching");
 
-    const isConnected: boolean = await new Promise((resolve, reject) => {
-      peerConnection.addEventListener("connectionstatechange", (e) => {
-        console.log(peerConnection.connectionState);
-        if (peerConnection.connectionState === "connected") {
-          resolve(true);
-          setConnectionStatus("connected");
-        } else if (peerConnection.connectionState === "failed") {
-          reject(false);
-        }
-      });
-    });
-    console.log("isConnected", isConnected);
-
-    if (isConnected) {
-      peerConnection.addEventListener("datachannel", (e) => {
-        setDataChannel(e.channel);
-        e.channel.addEventListener("message", (e) => {
-          receiveData(e.data);
+    try {
+      const isConnected: boolean = await new Promise((resolve, reject) => {
+        peerConnection.addEventListener("connectionstatechange", (e) => {
+          if (peerConnection.connectionState === "connected") {
+            resolve(true);
+            setConnectionStatus("connected");
+          } else if (peerConnection.connectionState === "failed") {
+            reject(false);
+          }
         });
       });
+
+      if (isConnected) {
+        peerConnection.addEventListener("datachannel", (e) => {
+          setDataChannel(e.channel);
+          e.channel.addEventListener("message", (e) => {
+            receiveData(e.data);
+          });
+        });
+      }
+      return isConnected;
+    } catch (err) {
+      return false;
     }
-    return isConnected;
   };
 
   const deleteRoom = async (id: string) => {
@@ -242,11 +233,6 @@ const useRTC = () => {
       clearTimeout(startTimeout);
     };
   }, []);
-
-  // Test with click button
-  const startRTC = () => {
-    startUp();
-  };
 
   return { sendData, opponent, connectionStatus };
 };

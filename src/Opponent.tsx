@@ -14,7 +14,6 @@ const Opponent = ({
   const [highScore, setHighScore] = useState(0);
 
   useEffect(() => {
-    console.log("Send to opponent");
     sendData({
       board: lockedBoard,
       level: gameInfo.level,
