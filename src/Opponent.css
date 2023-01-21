@@ -78,3 +78,17 @@
   gap: min(2vw, 2vh);
   padding: 0 min(2vw, 2vh);
 }
+
+.opponent-I,
+.opponent-O,
+.opponent-T,
+.opponent-J,
+.opponent-L,
+.opponent-S,
+.opponent-Z {
+  border-top: min(0.4vw, 0.4vh) solid rgba(209, 209, 209, 0.19);
+  border-right: min(0.4vw, 0.4vh) solid rgba(62, 62, 62, 0.211);
+  border-bottom: min(0.4vw, 0.4vh) solid rgba(0, 0, 0, 0.317);
+  border-left: min(0.4vw, 0.4vh) solid rgba(180, 180, 180, 0.343);
+  border-style: outset;
+}
