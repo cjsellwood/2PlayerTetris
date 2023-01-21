@@ -1,13 +1,24 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
+  getDoc,
   getDocs,
   onSnapshot,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "./firebase";
+import { Square } from "./useTetris";
+
+interface gameState {
+  board: Square[][];
+  level: number;
+  lines: number;
+  score: number;
+}
 
 const configuration = {
   iceServers: [
@@ -18,11 +29,9 @@ const configuration = {
   iceCandidatePoolSize: 10,
 };
 
+const peerConnection = new RTCPeerConnection(configuration);
+
 const useRTC = () => {
-  const [peerConnection, setPeerConnection] = useState(
-    new RTCPeerConnection(configuration)
-  );
-  const [rooms, setRooms] = useState<string[]>([]);
   const [dataChannel, setDataChannel] = useState<RTCDataChannel>();
 
   const getRooms = async () => {
@@ -36,11 +45,109 @@ const useRTC = () => {
 
   const startUp = async () => {
     const currentRooms = await getRooms();
-    setRooms(currentRooms);
     console.log(currentRooms);
+
+    // If no current rooms create a new room
     if (!currentRooms.length) {
       createRoom();
+      return;
     }
+
+    // Go through rooms until one can be connected to
+    while (currentRooms.length) {
+      const didJoin = await joinRoom(currentRooms.pop()!);
+      if (didJoin) {
+        return;
+      }
+
+      console.log(currentRooms);
+    }
+
+    // Create room if did not connect to any
+    createRoom();
+  };
+
+  const joinRoom = async (id: string): Promise<boolean> => {
+    const callDoc = doc(collection(db, `calls`), id);
+    const offerCandidates = collection(callDoc, "offerCandidates");
+    const answerCandidates = collection(callDoc, "answerCandidates");
+
+    // Check if room already has been answered before and delete if has
+    if (!(await getDocs(answerCandidates)).empty) {
+      await deleteRoom(id);
+      console.log("DELETE");
+      return false;
+    }
+
+    // Collect ICE candidates
+    peerConnection.addEventListener("icecandidate", async (e) => {
+      if (!e.candidate) {
+        console.log("Got final candidate");
+        return;
+      }
+      // console.log("Got candidate: ", e.candidate);
+      await addDoc(answerCandidates, e.candidate.toJSON());
+    });
+
+    const callData = (await getDoc(callDoc)).data();
+    console.log(callData);
+
+    if (!callData) {
+      return false;
+    }
+
+    const offerDescription = callData.offer;
+    await peerConnection.setRemoteDescription(
+      new RTCSessionDescription(offerDescription)
+    );
+
+    const answerDescription = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answerDescription);
+
+    const answer = {
+      type: answerDescription.type,
+      sdp: answerDescription.sdp,
+    };
+
+    await updateDoc(callDoc, { answer });
+
+    // Listen to remote ICE candidates
+    onSnapshot(offerCandidates, (snapshot) => {
+      console.log(snapshot.docChanges());
+      snapshot.docChanges().forEach(async (change) => {
+        if (change.type === "added") {
+          let data = change.doc.data();
+          // console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
+          await peerConnection.addIceCandidate(new RTCIceCandidate(data));
+        }
+      });
+    });
+
+    const isConnected: boolean = await new Promise((resolve, reject) => {
+      peerConnection.addEventListener("connectionstatechange", (e) => {
+        console.log(peerConnection.connectionState);
+        if (peerConnection.connectionState === "connected") {
+          resolve(true);
+        } else if (peerConnection.connectionState === "failed") {
+          reject(false);
+        }
+      });
+    });
+    console.log("isConnected", isConnected);
+
+    if (isConnected) {
+      peerConnection.addEventListener("datachannel", (e) => {
+        setDataChannel(e.channel);
+        e.channel.addEventListener("message", (e) => {
+          receiveData(e.data);
+        });
+      });
+    }
+    return isConnected;
+  };
+
+  const deleteRoom = async (id: string) => {
+    await deleteDoc(doc(collection(db, "calls"), id));
   };
 
   const createRoom = async () => {
@@ -101,10 +208,14 @@ const useRTC = () => {
     });
   };
 
-  const receiveData = (data: any) => {};
+  const [opponent, setOpponent] = useState<gameState>();
 
-  const sendData = (data: any) => {
-    dataChannel?.send(data);
+  const receiveData = (opponentState: string) => {
+    setOpponent(JSON.parse(opponentState));
+  };
+
+  const sendData = (userState: gameState) => {
+    dataChannel?.send(JSON.stringify(userState));
   };
 
   // On startup
@@ -117,7 +228,7 @@ const useRTC = () => {
     startUp();
   };
 
-  return { sendData, startRTC };
+  return { sendData, startRTC, opponent };
 };
 
 export default useRTC;

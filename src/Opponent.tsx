@@ -4,281 +4,44 @@ import "./Opponent.css";
 import { db } from "./firebase";
 import useRTC from "./useRTC";
 
-const Opponent = ({ lockedBoard }: { lockedBoard: Square[][] }) => {
-  // const [board, setBoard] = useState<Square[][]>(
-  //   new Array(20).fill(new Array(10).fill({}))
-  // );
-  const [board, setBoard] = useState<Square[][]>([
-    [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-    [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-    [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-    [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-    [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-    [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-    [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-    [
-      {},
-      {},
-      {},
-      {
-        name: "I",
-        active: false,
-      },
-      {
-        name: "I",
-        active: false,
-      },
-      {
-        name: "I",
-        active: false,
-      },
-      {
-        name: "I",
-        active: false,
-      },
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {},
-      {
-        name: "S",
-        active: false,
-      },
-      {
-        name: "S",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {
-        name: "S",
-        active: false,
-      },
-      {
-        name: "S",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {},
-      {
-        name: "T",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {
-        name: "T",
-        active: false,
-      },
-      {
-        name: "T",
-        active: false,
-      },
-      {
-        name: "T",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {
-        name: "J",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {
-        name: "J",
-        active: false,
-      },
-      {
-        name: "J",
-        active: false,
-      },
-      {
-        name: "J",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {},
-      {
-        name: "O",
-        active: false,
-      },
-      {
-        name: "O",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {},
-      {
-        name: "O",
-        active: false,
-      },
-      {
-        name: "O",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {},
-      {},
-      {
-        name: "L",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {
-        name: "L",
-        active: false,
-      },
-      {
-        name: "L",
-        active: false,
-      },
-      {
-        name: "L",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {
-        name: "Z",
-        active: false,
-      },
-      {
-        name: "Z",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-      {},
-    ],
-    [
-      {},
-      {},
-      {},
-      {},
-      {
-        name: "Z",
-        active: false,
-      },
-      {
-        name: "Z",
-        active: false,
-      },
-      {},
-      {},
-      {},
-      {},
-    ],
-  ]);
-  const [score, setScore] = useState(0);
-  const [level, setLevel] = useState(1);
-  const [lines, setLines] = useState(0);
+const Opponent = ({
+  lockedBoard,
+  gameInfo,
+}: {
+  lockedBoard: Square[][];
+  gameInfo: { level: number; lines: number; score: number };
+}) => {
   const [highScore, setHighScore] = useState(0);
 
   useEffect(() => {
     console.log("Send to opponent");
+    sendData({
+      board: lockedBoard,
+      level: gameInfo.level,
+      lines: gameInfo.lines,
+      score: gameInfo.score,
+    });
   }, [lockedBoard]);
 
-  useEffect(() => {
-    
-  }, []);
+  const { sendData, startRTC, opponent } = useRTC();
 
-  const { sendData, startRTC } = useRTC();
+  if (!opponent) {
+    return (
+      <div className="opponent">
+        <div className="opponent-board-container">
+          <button onClick={startRTC}>StartRTC</button>
+          <h1>Loading</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="opponent">
       <div className="opponent-board-container">
         <h1>Opponent</h1>
-        <button onClick={startRTC}>StartRTC</button>
         <div className="opponent-board">
-          {board.map((row, i) => {
+          {opponent.board.map((row, i) => {
             return (
               <div className="opponent-row" key={"row" + i}>
                 {row.map((square, j) => {
@@ -299,11 +62,11 @@ const Opponent = ({ lockedBoard }: { lockedBoard: Square[][] }) => {
       <div className="opponent-info">
         <div className="opponent-score-grid">
           <h2>Level</h2>
-          <h1>{level}</h1>
+          <h1>{opponent.level}</h1>
           <h2>Lines</h2>
-          <h1>{lines}</h1>
+          <h1>{opponent.lines}</h1>
           <h2>Score</h2>
-          <h1>{score}</h1>
+          <h1>{opponent.score}</h1>
           <h2>High Score</h2>
           <h1>{highScore}</h1>
         </div>

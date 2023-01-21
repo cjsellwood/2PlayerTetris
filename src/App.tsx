@@ -19,7 +19,10 @@ function App() {
     <div className="App">
       <div className="game">
         <div className="opponent-container">
-          <Opponent lockedBoard={lockedBoard}/>
+          <Opponent
+            lockedBoard={lockedBoard}
+            gameInfo={{ level, lines, score }}
+          />
         </div>
         <div className="board-container">
           <div className="board">
