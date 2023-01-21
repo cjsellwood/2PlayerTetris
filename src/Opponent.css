@@ -52,6 +52,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-top: min(3vw, 3vh);
+  height: 100%;
 }
 
 .opponent-info h1 {

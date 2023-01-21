@@ -248,7 +248,7 @@ const useRTC = () => {
     startUp();
   };
 
-  return { sendData, startRTC, opponent, connectionStatus };
+  return { sendData, opponent, connectionStatus };
 };
 
 export default useRTC;

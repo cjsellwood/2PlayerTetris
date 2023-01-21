@@ -23,7 +23,13 @@ const Opponent = ({
     });
   }, [lockedBoard]);
 
-  const { sendData, startRTC, opponent, connectionStatus } = useRTC();
+  const { sendData, opponent, connectionStatus } = useRTC();
+
+  useEffect(() => {
+    if (opponent.score > highScore) {
+      setHighScore(opponent.score);
+    }
+  }, [opponent.score]);
 
   if (connectionStatus !== "connected") {
     return (
