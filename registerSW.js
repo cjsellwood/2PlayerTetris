@@ -1,1 +1,1 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/2playertetris/sw.js', { scope: '/2playertetris/' })})}
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/2PlayerTetris/sw.js', { scope: '/2PlayerTetris/' })})}
